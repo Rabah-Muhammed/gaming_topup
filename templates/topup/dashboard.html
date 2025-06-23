@@ -1,0 +1,195 @@
+{% extends "admin/base_site.html" %}
+{% block extrastyle %}
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+<style>
+    body {
+        background: linear-gradient(135deg, #f0f4f8 0%, #e9eafc 100%);
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.75);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        backdrop-filter: blur(8px);
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    .dashboard-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .dashboard-card:hover {
+        transform: translateY(-4px) scale(1.03);
+        box-shadow: 0 12px 32px rgba(80, 112, 255, 0.12);
+    }
+    .table-container {
+        max-height: 280px;
+        overflow-y: auto;
+    }
+    .table-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(243, 244, 246, 0.85);
+        backdrop-filter: blur(2px);
+    }
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #a0aec0;
+        border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #718096;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-10">
+
+    <!-- Dashboard Title -->
+    <div class="flex items-center mb-8">
+        <i class="ri-bar-chart-grouped-line text-4xl text-indigo-600 mr-3"></i>
+        <h1 class="text-4xl font-extrabold text-gray-800 tracking-tight">Gaming Top-Up Dashboard</h1>
+    </div>
+
+    <!-- Chart.js Revenue Chart at Top -->
+    <div class="dashboard-card glass p-8 mb-10">
+        <div class="flex items-center mb-6">
+            <i class="ri-line-chart-line text-2xl text-green-500 mr-2"></i>
+            <h2 class="text-2xl font-semibold text-gray-700">Daily Revenue (Last 7 Days)</h2>
+        </div>
+        <canvas id="revenueChart" height="110"></canvas>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+        <!-- Top Products -->
+        <div class="dashboard-card glass p-8">
+            <div class="flex items-center mb-6">
+                <i class="ri-fire-fill text-2xl text-pink-500 mr-2"></i>
+                <h2 class="text-2xl font-semibold text-gray-700">Top 5 Most Purchased Products</h2>
+            </div>
+            <div class="table-container rounded-lg overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="py-3 px-4 text-white-500 font-bold">Product</th>
+                            <th class="py-3 px-4 text-white-500 font-bold">Orders</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in top_products %}
+                        <tr class="border-t hover:bg-indigo-50/50 transition">
+                            <td class="py-3 px-4 text-white-800 font-medium">{{ item.product__name }}</td>
+                            <td class="py-3 px-4 text-white-600 font-bold">{{ item.total }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="py-3 px-4 text-gray-400 text-center">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Daily Revenue Table -->
+        <div class="dashboard-card glass p-8">
+            <div class="flex items-center mb-6">
+                <i class="ri-calendar-todo-fill text-2xl text-green-500 mr-2"></i>
+                <h2 class="text-2xl font-semibold text-gray-700">Daily Revenue Table</h2>
+            </div>
+            <div class="table-container rounded-lg overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="py-3 px-4 text-white-500 font-bold">Date</th>
+                            <th class="py-3 px-4 text-white-500 font-bold">Revenue (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in daily_revenue %}
+                        <tr class="border-t hover:bg-green-50/50 transition">
+                            <td class="py-3 px-4 text-white-800 font-medium">{{ item.created_at__date }}</td>
+                            <td class="py-3 px-4 text-white-600 font-bold">{{ item.total_revenue }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="py-3 px-4 text-gray-400 text-center">No data available</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Failed Payments -->
+    <div class="dashboard-card glass p-8 flex items-center justify-between">
+        <div class="flex items-center">
+            <i class="ri-close-circle-fill text-3xl text-red-500 mr-3"></i>
+            <div>
+                <h2 class="text-2xl font-semibold text-gray-700 mb-1">Failed Payments (This Month)</h2>
+                <p class="text-lg text-gray-700">
+                    Total Failed Orders: <span class="font-bold text-red-600 text-xl">{{ failed_count }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="rounded-full bg-red-100 px-5 py-2 text-red-600 font-bold text-lg shadow-inner">
+            <i class="ri-error-warning-line mr-2"></i>
+            {{ failed_count }}
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Prepare data for the chart from Django context
+    const revenueLabels = [
+        {% for item in daily_revenue %}
+            "{{ item.created_at__date }}",
+        {% endfor %}
+    ];
+    const revenueData = [
+        {% for item in daily_revenue %}
+            {{ item.total_revenue }},
+        {% endfor %}
+    ];
+
+    // Chart.js initialization
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    const revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: revenueLabels,
+            datasets: [{
+                label: 'Daily Revenue (₹)',
+                data: revenueData,
+                backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                borderWidth: 3,
+                pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                pointRadius: 5,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#374151', font: { weight: 'bold' } }
+                },
+                y: {
+                    grid: { color: '#e5e7eb' },
+                    ticks: { color: '#374151', font: { weight: 'bold' }, beginAtZero: true }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
