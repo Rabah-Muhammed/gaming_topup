@@ -1,5 +1,45 @@
 from rest_framework import serializers
-from .models import TopUpProduct, Game, TopUpOrder
+from django.contrib.auth.models import User
+from .models import TopUpProduct, Game, TopUpOrder, UserProfile, PaymentTransaction
+import uuid
+
+
+
+class RegisterSerializer(serializers.ModelSerializer):
+    phone_number = serializers.CharField(write_only=True)
+    date_of_birth = serializers.DateField(write_only=True)
+    preferred_game = serializers.PrimaryKeyRelatedField(
+        queryset=Game.objects.all(), required=False, write_only=True
+    )
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password', 'phone_number', 'date_of_birth', 'preferred_game']
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        phone = validated_data.pop('phone_number')
+        dob = validated_data.pop('date_of_birth')
+        preferred_game = validated_data.pop('preferred_game', None)
+
+        user = User.objects.create_user(**validated_data)
+        UserProfile.objects.create(
+            user=user,
+            phone_number=phone,
+            date_of_birth=dob,
+            preferred_game=preferred_game
+        )
+        return user
+
+    def to_representation(self, instance):
+        return {
+            "id": instance.id,
+            "username": instance.username,
+            "email": instance.email,
+            "message": "User registered successfully"
+        }
+
+
 
 class TopUpOrderSerializer(serializers.Serializer):
     gamename = serializers.CharField()
@@ -7,8 +47,6 @@ class TopUpOrderSerializer(serializers.Serializer):
     product_name = serializers.CharField()
     product_id = serializers.IntegerField()
     product_price = serializers.DecimalField(max_digits=10, decimal_places=2)
-    user_email = serializers.EmailField()
-    payment_status = serializers.ChoiceField(choices=['pending', 'success', 'failed'])
 
     def validate(self, data):
         try:
@@ -17,7 +55,12 @@ class TopUpOrderSerializer(serializers.Serializer):
             raise serializers.ValidationError("Game not found or inactive.")
 
         try:
-            product = TopUpProduct.objects.get(id=data['product_id'], name=data['product_name'], game=game, price=data['product_price'])
+            product = TopUpProduct.objects.get(
+                id=data['product_id'],
+                name=data['product_name'],
+                game=game,
+                price=data['product_price']
+            )
         except TopUpProduct.DoesNotExist:
             raise serializers.ValidationError("Product not found or doesn't match the game.")
 
@@ -25,8 +68,16 @@ class TopUpOrderSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        return TopUpOrder.objects.create(
-            user_email=validated_data['user_email'],
-            product=validated_data['product'],
-            status=validated_data['payment_status']
+        user = self.context['request'].user
+        order = TopUpOrder.objects.create(
+            user_email=user.email,
+            product=validated_data['product']
         )
+
+        PaymentTransaction.objects.create(
+            topup_order=order,
+            transaction_id=str(uuid.uuid4()),
+            provider="SimulatedProvider"
+        )
+
+        return order
