@@ -1,102 +1,220 @@
-#  Gaming Top-Up Management System
+# 🎮 Gaming Top-Up Management System
 
-A Django-based backend system that allows users to place gaming top-up orders, and provides admins with insightful analytics via a visual dashboard. The system supports validation, RESTful APIs, and automatic documentation with Swagger/OpenAPI.
-
----
-
-##  Features
-
--  Game & Product Models (with Django Admin)
--  Top-up API with validations
--  Swagger + ReDoc API docs via DRF Spectacular
--  Staff-only dashboard:
-  -  Top 5 most purchased products
-  -  Revenue for the last 7 days (with chart)
-  -  Failed payment count for the current month
--  Responsive dashboard using Tailwind CSS and Chart.js
+A Django-based backend system that allows users to place gaming top-up orders, handle transactions reliably, and provides admins with advanced business analytics through a visual dashboard. The system supports JWT authentication, payment transaction syncing, exportable reports, and API documentation.
 
 ---
 
-##  Tech Stack
+## ✅ Features
+
+- **Authentication & User Management**
+  - JWT-based login & refresh
+  - User registration with profile info
+
+- **Top-Up System**
+  - Validated game & product selection
+  - Auto-created payment transaction with UUID
+  - Payment status webhook support
+  - Signal to sync TopUpOrder status with transaction
+
+- **Admin Dashboard (Staff Only)**
+  - 📈 Daily Top-Up Revenue (last 30 days)
+  - 🔥 Top 5 Most Purchased Products
+  - 🎮 Game-wise Revenue Distribution
+  - 👤 Most Active Users (by number of orders)
+  - 📆 Date Range Filtering
+  - ❌ Monthly Failed Payment Count
+
+- **CSV Export**
+  - 🧾 All Top-Up Orders → `/api/export/orders/`
+  - 🚫 Failed Transactions → `/api/export/failures/`
+
+- **API Docs**
+  - Swagger UI → `/api/docs/`
+  - ReDoc UI → `/api/redoc/`
+  - OpenAPI Schema JSON → `/api/schema/`
+
+- **Frontend Dashboard**
+  - Built with TailwindCSS & Chart.js
+  - Clean UI with real-time analytics
+  - Filter and export buttons
+
+---
+
+## 🛠 Tech Stack
 
 - Python 3.x
 - Django
 - Django REST Framework
-- drf-spectacular (for OpenAPI docs)
-- Chart.js (for visualization)
-- Tailwind CSS (for dashboard design)
+- drf-spectacular
+- Simple JWT (Auth)
+- TailwindCSS (UI)
+- Chart.js (Charts)
 
 ---
 
-##  Setup Instructions
+## ⚙️ Setup Instructions
 
 ```bash
 # Clone the repository
 git clone https://github.com/Rabah-Muhammed/gaming_topup.git
 cd gaming_topup_project
 
-# Set up a virtual environment
+# Set up virtual environment
 python3 -m venv venv
 source venv/bin/activate
 
-# Install required packages
+# Install dependencies
 pip install -r requirements.txt
 
 # Apply migrations
 python manage.py migrate
 
-# Create a superuser for admin access
+# Create a superuser
 python manage.py createsuperuser
 
-# Start the development server
+# Start development server
 python manage.py runserver
 ```
-##  Top-Up API Usage
-###  Endpoint
+
+---
+
+## 🔐 Authentication
+
+| Endpoint             | Method | Description             |
+|----------------------|--------|--------------------------|
+| `/api/register/`     | POST   | Register a new user      |
+| `/api/token/`        | POST   | Obtain access token      |
+| `/api/token/refresh/`| POST   | Refresh JWT token        |
+
+---
+
+## 💳 Top-Up API
+
+**Endpoint:**
 ```
 POST /api/topup/
 ```
-##  Sample Request
-```
+
+**Sample Request:**
+```json
 {
   "gamename": "clash of clan",
   "game_id": "coc123",
   "product_name": "UC Pack 500",
   "product_id": 4,
-  "product_price": 699.00,
-  "user_email": "player@example.com",
-  "payment_status": "pending"
+  "product_price": 699.00
 }
 ```
-##  Sample Success Response
-```
+
+**Success Response:**
+```json
 {
-  "message": "Top-up order created successfully."
+  "message": "Top-up order created successfully.",
+  "transaction_id": "xxxx-xxxx-uuid",
+  "status": "pending"
 }
 ```
-## ! Validation Rules
-   -  Game must exist and be active.
-   -  Product must match the specified game, name, ID, and price.
 
-##  Admin Dashboard
-###  URL
-```
-/api/dashboard/
-```
-## Access
--  Requires staff login (admin interface authentication)
+**Validation Rules:**
+- Game must exist and be active.
+- Product must match name, ID, price, and game.
 
-##  API Documentation
-  -  OpenAPI 3.0 powered by drf-spectacular:
+---
+
+## 🔁 Payment Webhook
+
+**Endpoint:**
 ```
- Schema JSON → /api/schema/
- Swagger UI → /api/docs/
- ReDoc UI → /api/redoc/
+POST /api/payment/webhook/
 ```
-## Contributing
-  -  Fork the repository.
-  -  Create a feature branch (git checkout -b feature-name).
-  -  Commit changes (git commit -m "Add feature").
-  -  Push to the branch (git push origin feature-name).
-  -  Open a pull request.
+
+**Payload Example:**
+```json
+{
+  "transaction_id": "xxxx-uuid",
+  "status": "success"
+}
+```
+
+This updates both `PaymentTransaction` and related `TopUpOrder` status automatically.
+
+---
+
+## 📊 Admin Dashboard
+
+**URL:** `/api/dashboard/`  
+**Access:** Staff-only
+
+**Features:**
+- Daily revenue chart & table
+- Most purchased products
+- Game-wise revenue bar chart
+- Most active users table
+- Date filtering
+- CSV export
+
+**Filter Example:**
+```
+/api/dashboard/?start_date=2025-06-01&end_date=2025-06-25
+```
+
+---
+
+## 📁 CSV Export Endpoints
+
+| Endpoint                  | Description                 |
+|---------------------------|-----------------------------|
+| `/api/export/orders/`     | Export all orders           |
+| `/api/export/failures/`   | Export failed transactions  |
+
+Each returns a downloadable `.csv` file.
+
+---
+
+## 📘 API Documentation
+
+| Tool      | URL              |
+|-----------|------------------|
+| Swagger   | `/api/docs/`     |
+| ReDoc     | `/api/redoc/`    |
+| Schema    | `/api/schema/`   |
+
+---
+
+## 🤝 Contributing
+
+```bash
+# Fork the repo
+# Create a feature branch
+git checkout -b feature-name
+
+# Make changes, commit, and push
+git commit -m "Add feature"
+git push origin feature-name
+```
+
+Then open a pull request 🚀
+
+---
+
+## 🧠 Business Insights Powered By
+
+- Chart.js for interactive analytics
+- Django ORM for optimized aggregations
+- TailwindCSS for responsive UI
+- Secure backend powered by Django & DRF
+
+---
+
+## 📸 Preview
+
+Access the dashboard at:
+
+```
+http://localhost:8000/api/dashboard/
+```
+
+Use staff login credentials to view analytics & export options.
+
+---
 
