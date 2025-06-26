@@ -1,10 +1,10 @@
-# 🎮 Gaming Top-Up Management System
+#  Gaming Top-Up Management System
 
 A Django-based backend system that allows users to place gaming top-up orders, handle transactions reliably, and provides admins with advanced business analytics through a visual dashboard. The system supports JWT authentication, payment transaction syncing, exportable reports, and API documentation.
 
 ---
 
-## ✅ Features
+##  Features
 
 - **Authentication & User Management**
   - JWT-based login & refresh
@@ -17,16 +17,16 @@ A Django-based backend system that allows users to place gaming top-up orders, h
   - Signal to sync TopUpOrder status with transaction
 
 - **Admin Dashboard (Staff Only)**
-  - 📈 Daily Top-Up Revenue (last 30 days)
-  - 🔥 Top 5 Most Purchased Products
-  - 🎮 Game-wise Revenue Distribution
-  - 👤 Most Active Users (by number of orders)
-  - 📆 Date Range Filtering
-  - ❌ Monthly Failed Payment Count
+  -  Daily Top-Up Revenue (last 30 days)
+  -  Top 5 Most Purchased Products
+  -  Game-wise Revenue Distribution
+  -  Most Active Users (by number of orders)
+  -  Date Range Filtering
+  -  Monthly Failed Payment Count
 
 - **CSV Export**
-  - 🧾 All Top-Up Orders → `/api/export/orders/`
-  - 🚫 Failed Transactions → `/api/export/failures/`
+  -  All Top-Up Orders → `/api/export/orders/`
+  -  Failed Transactions → `/api/export/failures/`
 
 - **API Docs**
   - Swagger UI → `/api/docs/`
@@ -40,7 +40,7 @@ A Django-based backend system that allows users to place gaming top-up orders, h
 
 ---
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - Python 3.x
 - Django
@@ -52,7 +52,7 @@ A Django-based backend system that allows users to place gaming top-up orders, h
 
 ---
 
-## ⚙️ Setup Instructions
+##  Setup Instructions
 
 ```bash
 # Clone the repository
@@ -78,7 +78,7 @@ python manage.py runserver
 
 ---
 
-## 🔐 Authentication
+##  Authentication
 
 | Endpoint             | Method | Description             |
 |----------------------|--------|--------------------------|
@@ -88,7 +88,7 @@ python manage.py runserver
 
 ---
 
-## 💳 Top-Up API
+##  Top-Up API
 
 **Endpoint:**
 ```
@@ -121,7 +121,7 @@ POST /api/topup/
 
 ---
 
-## 🔁 Payment Webhook
+##  Payment Webhook
 
 **Endpoint:**
 ```
@@ -140,7 +140,7 @@ This updates both `PaymentTransaction` and related `TopUpOrder` status automatic
 
 ---
 
-## 📊 Admin Dashboard
+##  Admin Dashboard
 
 **URL:** `/api/dashboard/`  
 **Access:** Staff-only
@@ -160,7 +160,7 @@ This updates both `PaymentTransaction` and related `TopUpOrder` status automatic
 
 ---
 
-## 📁 CSV Export Endpoints
+##  CSV Export Endpoints
 
 | Endpoint                  | Description                 |
 |---------------------------|-----------------------------|
@@ -171,7 +171,7 @@ Each returns a downloadable `.csv` file.
 
 ---
 
-## 📘 API Documentation
+##  API Documentation
 
 | Tool      | URL              |
 |-----------|------------------|
@@ -181,7 +181,7 @@ Each returns a downloadable `.csv` file.
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 ```bash
 # Fork the repo
@@ -193,11 +193,11 @@ git commit -m "Add feature"
 git push origin feature-name
 ```
 
-Then open a pull request 🚀
+Then open a pull request 
 
 ---
 
-## 🧠 Business Insights Powered By
+##  Business Insights Powered By
 
 - Chart.js for interactive analytics
 - Django ORM for optimized aggregations
@@ -206,7 +206,7 @@ Then open a pull request 🚀
 
 ---
 
-## 📸 Preview
+##  Preview
 
 Access the dashboard at:
 
