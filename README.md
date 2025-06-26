@@ -8,7 +8,7 @@ A Django-based backend system that allows users to place gaming top-up orders, h
 
 - **Authentication & User Management**
   - JWT-based login & refresh
-  - User registration with profile info
+  - User registration with profile info (DOB, phone number, preferred game linked to Game model)
 
 - **Top-Up System**
   - Validated game & product selection
@@ -85,6 +85,7 @@ python manage.py runserver
 | `/api/register/`     | POST   | Register a new user      |
 | `/api/token/`        | POST   | Obtain access token      |
 | `/api/token/refresh/`| POST   | Refresh JWT token        |
+| `/api/profile/`      | PUT    | Update user profile      |
 
 ---
 
@@ -197,15 +198,6 @@ Then open a pull request
 
 ---
 
-##  Business Insights Powered By
-
-- Chart.js for interactive analytics
-- Django ORM for optimized aggregations
-- TailwindCSS for responsive UI
-- Secure backend powered by Django & DRF
-
----
-
 ##  Preview
 
 Access the dashboard at:
@@ -217,4 +209,3 @@ http://localhost:8000/api/dashboard/
 Use staff login credentials to view analytics & export options.
 
 ---
-
