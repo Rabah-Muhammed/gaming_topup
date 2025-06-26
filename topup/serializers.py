@@ -3,8 +3,6 @@ from django.contrib.auth.models import User
 from .models import TopUpProduct, Game, TopUpOrder, UserProfile, PaymentTransaction
 import uuid
 
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -12,10 +10,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = User.objects.create_user(**validated_data)
-        return user
+        return User.objects.create_user(**validated_data)
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    preferred_game = serializers.PrimaryKeyRelatedField(
+        queryset=Game.objects.all(), required=False
+    )
+
     class Meta:
         model = UserProfile
         fields = ['phone_number', 'date_of_birth', 'preferred_game']

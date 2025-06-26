@@ -28,6 +28,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user.userprofile
 
+
 class TopUpAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
