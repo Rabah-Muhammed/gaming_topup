@@ -21,8 +21,9 @@ class TopUpOrderAdmin(admin.ModelAdmin):
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
     list_display = ('user', 'phone_number', 'date_of_birth', 'preferred_game')
-    search_fields = ('user__username', 'phone_number')
+    search_fields = ('user__username', 'phone_number', 'user__email')
     list_filter = ('preferred_game',)
+    ordering = ('user__username',)
     
 @admin.register(PaymentTransaction)
 class PaymentTransactionAdmin(admin.ModelAdmin):

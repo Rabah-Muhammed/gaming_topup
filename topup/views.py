@@ -14,14 +14,19 @@ from rest_framework import status, generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .models import PaymentTransaction, TopUpOrder
-from .serializers import TopUpOrderSerializer, RegisterSerializer
-
+from .serializers import TopUpOrderSerializer, RegisterSerializer, UserProfileSerializer
 
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
+class UserProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        return self.request.user.userprofile
 
 class TopUpAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -40,7 +45,7 @@ class TopUpAPIView(APIView):
 
 
 class PaymentWebhookView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         transaction_id = request.data.get('transaction_id')
@@ -55,7 +60,6 @@ class PaymentWebhookView(APIView):
         transaction.save()
 
         return Response({"message": "Transaction and order status updated."}, status=200)
-
 
 
 

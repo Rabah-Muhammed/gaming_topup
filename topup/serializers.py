@@ -6,39 +6,19 @@ import uuid
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    phone_number = serializers.CharField(write_only=True)
-    date_of_birth = serializers.DateField(write_only=True)
-    preferred_game = serializers.PrimaryKeyRelatedField(
-        queryset=Game.objects.all(), required=False, write_only=True
-    )
-
     class Meta:
         model = User
-        fields = ['username', 'email', 'password', 'phone_number', 'date_of_birth', 'preferred_game']
+        fields = ['username', 'email', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        phone = validated_data.pop('phone_number')
-        dob = validated_data.pop('date_of_birth')
-        preferred_game = validated_data.pop('preferred_game', None)
-
         user = User.objects.create_user(**validated_data)
-        UserProfile.objects.create(
-            user=user,
-            phone_number=phone,
-            date_of_birth=dob,
-            preferred_game=preferred_game
-        )
         return user
 
-    def to_representation(self, instance):
-        return {
-            "id": instance.id,
-            "username": instance.username,
-            "email": instance.email,
-            "message": "User registered successfully"
-        }
-
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['phone_number', 'date_of_birth', 'preferred_game']
 
 
 class TopUpOrderSerializer(serializers.Serializer):
@@ -77,6 +57,7 @@ class TopUpOrderSerializer(serializers.Serializer):
         PaymentTransaction.objects.create(
             topup_order=order,
             transaction_id=str(uuid.uuid4()),
+            status='pending',
             provider="SimulatedProvider"
         )
 
